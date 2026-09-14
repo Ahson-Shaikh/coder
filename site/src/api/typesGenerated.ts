@@ -680,6 +680,11 @@ export type APIKeyScope =
 	| "chat:read"
 	| "chat:share"
 	| "chat:update"
+	| "chat_user_memory:*"
+	| "chat_user_memory:create"
+	| "chat_user_memory:delete"
+	| "chat_user_memory:read"
+	| "chat_user_memory:update"
 	| "coder:all"
 	| "coder:apikeys.manage_self"
 	| "coder:application_connect"
@@ -937,6 +942,11 @@ export const APIKeyScopes: APIKeyScope[] = [
 	"chat:read",
 	"chat:share",
 	"chat:update",
+	"chat_user_memory:*",
+	"chat_user_memory:create",
+	"chat_user_memory:delete",
+	"chat_user_memory:read",
+	"chat_user_memory:update",
 	"coder:all",
 	"coder:apikeys.manage_self",
 	"coder:application_connect",
@@ -7955,6 +7965,7 @@ export type RBACResource =
 	| "chat_model_config"
 	| "chat_project"
 	| "chat_project_memory"
+	| "chat_user_memory"
 	| "connection_log"
 	| "crypto_key"
 	| "debug_info"
@@ -8011,6 +8022,7 @@ export const RBACResources: RBACResource[] = [
 	"chat_model_config",
 	"chat_project",
 	"chat_project_memory",
+	"chat_user_memory",
 	"connection_log",
 	"crypto_key",
 	"debug_info",
@@ -8168,6 +8180,7 @@ export type ResourceType =
 	| "chat_operational_settings"
 	| "chat_project"
 	| "chat_project_memory"
+	| "chat_user_memory"
 	| "convert_login"
 	| "custom_role"
 	| "git_ssh_key"
@@ -8212,6 +8225,7 @@ export const ResourceTypes: ResourceType[] = [
 	"chat_operational_settings",
 	"chat_project",
 	"chat_project_memory",
+	"chat_user_memory",
 	"convert_login",
 	"custom_role",
 	"git_ssh_key",
