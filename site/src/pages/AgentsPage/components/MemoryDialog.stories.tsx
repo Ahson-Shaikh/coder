@@ -1,17 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn, userEvent, within } from "storybook/test";
 import { MockChatProjectMemory } from "#/testHelpers/entities";
-import { ChatProjectMemoryDialog } from "./ChatProjectMemoryDialog";
+import { MemoryDialog } from "./MemoryDialog";
 
 const meta = {
-	title: "pages/AgentsPage/ChatProjectMemoryDialog",
-	component: ChatProjectMemoryDialog,
+	title: "pages/AgentsPage/MemoryDialog",
+	component: MemoryDialog,
 	args: {
 		open: true,
 		onOpenChange: fn(),
 		onSubmit: fn(async () => undefined),
 	},
-} satisfies Meta<typeof ChatProjectMemoryDialog>;
+} satisfies Meta<typeof MemoryDialog>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
