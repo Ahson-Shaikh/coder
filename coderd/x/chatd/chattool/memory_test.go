@@ -30,6 +30,7 @@ func (s *memoryStore) Get(_ context.Context, name string) (chattool.Memory, erro
 	return memory, nil
 }
 func (*memoryStore) List(context.Context) ([]chattool.MemoryIndexEntry, error) { return nil, nil }
+func (*memoryStore) ListFull(context.Context) ([]chattool.Memory, error)       { return nil, nil }
 func (s *memoryStore) Count(context.Context) (int64, error)                    { return int64(len(s.memories)), nil }
 func (s *memoryStore) Upsert(_ context.Context, input chattool.MemoryInput) (chattool.Memory, error) {
 	memory := chattool.Memory{Name: input.Name, Description: input.Description, Body: input.Body, UpdatedAt: time.Now()}
@@ -41,6 +42,7 @@ func (s *memoryStore) Delete(_ context.Context, name string) error {
 	delete(s.memories, name)
 	return nil
 }
+func (s *memoryStore) InTx(fn func(chattool.MemoryStore) error) error { return fn(s) }
 
 func TestMemoryValidationAndNormalization(t *testing.T) {
 	t.Parallel()
@@ -50,21 +52,29 @@ func TestMemoryValidationAndNormalization(t *testing.T) {
 	require.Equal(t, "keep", chattool.NormalizeMemoryText(" <memory><project-memory>keep</project-memory></memory>\u200b "))
 }
 
-func TestFormatMemoryIndex(t *testing.T) {
+func TestFormatMemoryGuidanceAndIndexForTool(t *testing.T) {
 	t.Parallel()
 	entries := make([]chattool.MemoryIndexEntry, chattool.MaxMemoryIndexLines+1)
 	for i := range entries {
 		entries[i] = chattool.MemoryIndexEntry{Name: "memory-" + strings.Repeat("x", 50) + string(rune('a'+i%26)), Description: strings.Repeat("description ", 20)}
 	}
-	index := chattool.FormatMemoryIndex(chattool.MemoryScope{Kind: chattool.MemoryScopeProject, Label: "platform"}, entries)
-	require.Contains(t, index, "<memory>")
-	require.Contains(t, index, `project "platform"`)
+	guidance := chattool.FormatMemoryGuidance(chattool.MemoryScope{Kind: chattool.MemoryScopeProject, Label: "platform"})
+	require.Contains(t, guidance, "<memory>")
+	require.Contains(t, guidance, `project "platform"`)
+	require.Contains(t, guidance, chattool.MemoryGuidance)
+	require.NotContains(t, guidance, "memory-")
+	index := chattool.FormatMemoryIndexForTool(entries)
+	require.Contains(t, index, "Available memories (newest first):")
 	require.Contains(t, index, "more memories not shown.")
 	require.LessOrEqual(t, len(index), chattool.MaxMemoryIndexBytes)
-	empty := chattool.FormatMemoryIndex(chattool.MemoryScope{Kind: chattool.MemoryScopePersonal}, nil)
-	require.Contains(t, empty, chattool.MemoryGuidance)
-	require.Contains(t, empty, "No memories saved yet.")
-	require.Contains(t, empty, "Memory is personal to you")
+	require.Equal(t, "No memories saved yet.", chattool.FormatMemoryIndexForTool(nil))
+}
+
+func TestReadMemoryDescriptionIncludesIndex(t *testing.T) {
+	t.Parallel()
+	tool := chattool.ReadMemory(&memoryStore{memories: map[string]chattool.Memory{}}, chattool.MemoryScope{Kind: chattool.MemoryScopePersonal}, []chattool.MemoryIndexEntry{{Name: "release", Description: "Release process"}})
+	require.Contains(t, tool.Info().Description, "Read a memory by name.")
+	require.Contains(t, tool.Info().Description, "- release: Release process")
 }
 
 func TestSaveMemoryCapAndUpsert(t *testing.T) {
