@@ -163,57 +163,53 @@ export const SpendUsersTable: FC<SpendUsersTableProps> = ({
 								query={usersQuery}
 								paginationUnitLabel="users"
 							>
-								<div className="overflow-hidden rounded-lg border border-border-default">
-									<Table aria-label="Spend by user">
-										<TableHeader>
-											<TableRow>
-												{spendSortColumns.map(({ field, label }) => {
-													const active = sort.sort_by === field;
-													const Icon = active
-														? sort.sort_order === "asc"
-															? ArrowUpIcon
-															: ArrowDownIcon
-														: ArrowUpDownIcon;
-													return (
-														<TableHead
-															key={field}
-															className={
-																field === "username" ? "" : "text-right"
-															}
-															aria-sort={
-																active
-																	? sort.sort_order === "asc"
-																		? "ascending"
-																		: "descending"
-																	: "none"
-															}
+								<Table aria-label="Spend by user">
+									<TableHeader>
+										<TableRow>
+											{spendSortColumns.map(({ field, label }) => {
+												const active = sort.sort_by === field;
+												const Icon = active
+													? sort.sort_order === "asc"
+														? ArrowUpIcon
+														: ArrowDownIcon
+													: ArrowUpDownIcon;
+												return (
+													<TableHead
+														key={field}
+														className={field === "username" ? "" : "text-right"}
+														aria-sort={
+															active
+																? sort.sort_order === "asc"
+																	? "ascending"
+																	: "descending"
+																: "none"
+														}
+													>
+														<Button
+															variant="subtle"
+															size="sm"
+															className="px-0"
+															onClick={() => onSort(field)}
 														>
-															<Button
-																variant="subtle"
-																size="sm"
-																className="px-0"
-																onClick={() => onSort(field)}
-															>
-																{label}
-																<Icon aria-hidden="true" className="size-3" />
-															</Button>
-														</TableHead>
-													);
-												})}
-											</TableRow>
-										</TableHeader>
-										<TableBody>
-											{usersQuery.data.users.map((user) => (
-												<UserRow
-													key={user.id}
-													user={user}
-													detailsTo={userDetailsTo(user)}
-													detailsState={detailsState}
-												/>
-											))}
-										</TableBody>
-									</Table>
-								</div>
+															{label}
+															<Icon aria-hidden="true" className="size-3" />
+														</Button>
+													</TableHead>
+												);
+											})}
+										</TableRow>
+									</TableHeader>
+									<TableBody>
+										{usersQuery.data.users.map((user) => (
+											<UserRow
+												key={user.id}
+												user={user}
+												detailsTo={userDetailsTo(user)}
+												detailsState={detailsState}
+											/>
+										))}
+									</TableBody>
+								</Table>
 							</PaginationContainer>
 						)}
 					</div>
